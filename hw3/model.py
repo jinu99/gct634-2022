@@ -96,14 +96,22 @@ class Transcriber_RNN(nn.Module):
         # Notice: Changing the initialization order may fail the tests.
         self.melspectrogram = LogMelSpectrogram()
 
-        self.frame_lstm = ...
-        self.frame_fc = ...
+        self.frame_lstm = nn.LSTM(N_MELS, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.frame_fc = nn.Linear(88*2, 88)
 
-        self.onset_lstm = ...
-        self.onset_fc = ...
+        self.onset_lstm = nn.LSTM(N_MELS, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.onset_fc = nn.Linear(88*2, 88)
 
     def forward(self, audio):
         # TODO: Question 1
+        mel = self.melspectrogram(audio)
+
+        x = self.frame_conv_stack(mel)
+        frame_out = self.frame_fc(x)
+
+        x = self.onset_conv_stack(mel)
+        onset_out = self.onset_fc(x)
+
         return frame_out, onset_out
 
 
@@ -113,16 +121,26 @@ class Transcriber_CRNN(nn.Module):
         # Notice: Changing the initialization order may fail the tests.
         self.melspectrogram = LogMelSpectrogram()
 
-        self.frame_conv_stack = ...
-        self.frame_lstm = ...
-        self.frame_fc = ...
+        self.frame_conv_stack = ConvStack(N_MELS, cnn_unit, fc_unit)
+        self.frame_lstm = nn.LSTM(fc_unit, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.frame_fc = nn.Linear(88*2, 88)
 
-        self.onset_conv_stack = ...
-        self.onset_lstm = ...
-        self.onset_fc = ...
+        self.onset_conv_stack = ConvStack(N_MELS, cnn_unit, fc_unit)
+        self.onset_lstm = nn.LSTM(fc_unit, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.onset_fc = nn.Linear(88*2, 88)
 
     def forward(self, audio):
         # TODO: Question 2
+        mel = self.melspectrogram(audio)
+
+        x = self.frame_conv_stack(mel)
+        x = self.frame_lstm(x)
+        frame_out = self.frame_fc(x)
+
+        x = self.onset_conv_stack(mel)
+        x = self.onset_lstm(x)
+        onset_out = self.onset_fc(x)
+
         return frame_out, onset_out
 
 
@@ -132,16 +150,31 @@ class Transcriber_ONF(nn.Module):
         # Notice: Changing the initialization order may fail the tests.
         self.melspectrogram = LogMelSpectrogram()
 
-        self.frame_conv_stack = ...
-        self.frame_fc = ...
+        self.frame_conv_stack = ConvStack(N_MELS, cnn_unit, fc_unit)
+        self.frame_fc = nn.Linear(fc_unit, 88)
 
-        self.onset_conv_stack = ...
-        self.onset_lstm = ...
-        self.onset_fc = ...
+        self.onset_conv_stack = ConvStack(N_MELS, cnn_unit, fc_unit)
+        self.onset_lstm = nn.LSTM(fc_unit, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.onset_fc = nn.Linear(88*2, 88)
 
-        self.combined_lstm = ...
-        self.combined_fc = ...
+        self.combined_lstm = nn.LSTM(88*2, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.combined_fc = nn.Linear(88*2, 88)
 
     def forward(self, audio):
         # TODO: Question 3
+        mel = self.melspectrogram(audio)
+
+        frame_x = self.frame_conv_stack(mel)
+        frame_x = self.frame_fc(frame_x)
+
+        onset_x = self.onset_conv_stack(mel)
+        onset_x = self.onset_lstm(onset_x)
+        onset_x = self.onset_fc(onset_x)
+        onset_out = nn.Sigmoid()(onset_x)
+
+        combined_x = torch.cat([frame_x.detach(), onset_x.detach()], 2)
+        combined_x = self.combined_lstm(combined_x)
+        combined_x = self.combined_fc(combined_x)
+        frame_out = nn.Sigmoid()(combined_x)
+
         return frame_out, onset_out
