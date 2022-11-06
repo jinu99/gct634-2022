@@ -96,10 +96,10 @@ class Transcriber_RNN(nn.Module):
         # Notice: Changing the initialization order may fail the tests.
         self.melspectrogram = LogMelSpectrogram()
 
-        self.frame_lstm = nn.LSTM(N_MELS, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.frame_lstm = nn.LSTM(N_MELS, 88, batch_first=True, num_layers=2, bidirectional=True)
         self.frame_fc = nn.Linear(88*2, 88)
 
-        self.onset_lstm = nn.LSTM(N_MELS, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.onset_lstm = nn.LSTM(N_MELS, 88, batch_first=True, num_layers=2, bidirectional=True)
         self.onset_fc = nn.Linear(88*2, 88)
 
     def forward(self, audio):
@@ -122,11 +122,11 @@ class Transcriber_CRNN(nn.Module):
         self.melspectrogram = LogMelSpectrogram()
 
         self.frame_conv_stack = ConvStack(N_MELS, cnn_unit, fc_unit)
-        self.frame_lstm = nn.LSTM(fc_unit, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.frame_lstm = nn.LSTM(fc_unit, 88, batch_first=True, num_layers=2, bidirectional=True)
         self.frame_fc = nn.Linear(88*2, 88)
 
         self.onset_conv_stack = ConvStack(N_MELS, cnn_unit, fc_unit)
-        self.onset_lstm = nn.LSTM(fc_unit, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.onset_lstm = nn.LSTM(fc_unit, 88, batch_first=True, num_layers=2, bidirectional=True)
         self.onset_fc = nn.Linear(88*2, 88)
 
     def forward(self, audio):
@@ -154,10 +154,10 @@ class Transcriber_ONF(nn.Module):
         self.frame_fc = nn.Linear(fc_unit, 88)
 
         self.onset_conv_stack = ConvStack(N_MELS, cnn_unit, fc_unit)
-        self.onset_lstm = nn.LSTM(fc_unit, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.onset_lstm = nn.LSTM(fc_unit, 88, batch_first=True, num_layers=2, bidirectional=True)
         self.onset_fc = nn.Linear(88*2, 88)
 
-        self.combined_lstm = nn.LSTM(88*2, 88, batch_first=True, num_layer=2, bidirectional=True)
+        self.combined_lstm = nn.LSTM(88*2, 88, batch_first=True, num_layers=2, bidirectional=True)
         self.combined_fc = nn.Linear(88*2, 88)
 
     def forward(self, audio):
