@@ -182,12 +182,12 @@ class Transcriber_ONF(nn.Module):
 
         onset_x = self.onset_conv_stack(mel)
         onset_x = self.onset_lstm(onset_x)[0]
-        onset_x = self.onset_fc(onset_x)
-        onset_out = nn.Sigmoid()(onset_x)
+        onset_out = self.onset_fc(onset_x)
+        # onset_out = nn.Sigmoid()(onset_x)
 
-        combined_x = torch.cat([onset_x.detach(), frame_x], 2)
+        combined_x = torch.cat([onset_out.detach(), frame_x], 2)
         combined_x = self.combined_lstm(combined_x)[0]
-        combined_x = self.combined_fc(combined_x)
-        frame_out = nn.Sigmoid()(combined_x)
+        frame_out = self.combined_fc(combined_x)
+        # frame_out = nn.Sigmoid()(combined_x)
 
         return frame_out, onset_out
