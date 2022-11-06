@@ -185,7 +185,7 @@ class Transcriber_ONF(nn.Module):
         onset_x = self.onset_fc(onset_x)
         onset_out = nn.Sigmoid()(onset_x)
 
-        combined_x = torch.cat([frame_x.detach(), onset_x.detach()], 2)
+        combined_x = torch.cat([onset_x.detach(), frame_x], 2)
         combined_x = self.combined_lstm(combined_x)[0]
         combined_x = self.combined_fc(combined_x)
         frame_out = nn.Sigmoid()(combined_x)
