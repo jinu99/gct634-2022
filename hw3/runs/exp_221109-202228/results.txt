@@ -1,0 +1,16 @@
+                            loss frame_loss                : 0.056 +- 0.031
+                            loss onset_loss                : 0.007 +- 0.006
+                           frame frame_precision           : 0.669 +- 0.244
+                           frame frame_recall              : 0.590 +- 0.182
+                           frame frame_f1                  : 0.602 +- 0.183
+                           frame onset_precision           : 0.686 +- 0.129
+                           frame onset_recall              : 0.469 +- 0.232
+                           frame onset_f1                  : 0.519 +- 0.175
+                            note precision                 : 0.929 +- 0.079
+                            note recall                    : 0.518 +- 0.240
+                            note f1                        : 0.629 +- 0.199
+                            note overlap                   : 0.425 +- 0.148
+               note-with-offsets precision                 : 0.318 +- 0.184
+               note-with-offsets recall                    : 0.194 +- 0.190
+               note-with-offsets f1                        : 0.228 +- 0.183
+               note-with-offsets overlap                   : 0.755 +- 0.270
